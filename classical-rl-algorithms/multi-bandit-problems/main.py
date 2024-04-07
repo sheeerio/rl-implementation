@@ -1,4 +1,4 @@
-from agents import epsilon_greedy_agent, softmax_agent, UCB_agent
+from agents import epsilon_greedy_agent, softmax_agent, UCB_agent, Median_Elimination_Agent
 from bandits import BernoulliStationaryBandit, GaussianStationaryBandit
 from utils import plot_armcount, plot_regret
 import numpy as np
@@ -15,10 +15,12 @@ gauss_bandit = GaussianStationaryBandit(k, mu, sigma)
 epsilon_greedy_player_bernoulli = epsilon_greedy_agent(bernoulli_bandit, 1, num_iters, 50)
 softmax_player_bernoulli = softmax_agent(bernoulli_bandit, 0.1, num_iters)
 ucb_player_bernoulli = UCB_agent(bernoulli_bandit, num_iters)
+mea_player_bernoulli = Median_Elimination_Agent(bernoulli_bandit, epsilon=0.1, delta=0.1)
 
 epsilon_greedy_player_gauss = epsilon_greedy_agent(gauss_bandit, 1, num_iters, 50)
 softmax_player_gauss = softmax_agent(gauss_bandit, 0.1, num_iters)
 ucb_player_gauss = UCB_agent(gauss_bandit, num_iters)
+mea_player_gauss = Median_Elimination_Agent(gauss_bandit, epsilon=0.1, delta=0.1)
 
 def play_epsilon_greedy():
     data["bernoulli_bandit"]["epsilon"] = epsilon_greedy_player_bernoulli.play()
@@ -44,14 +46,19 @@ def play_ucb():
     plot_regret(data, num_iters, "bernoulli_bandit", "ucb")
     plot_regret(data, num_iters, "gauss_bandit", "ucb")
 
+def play_mea():
+    data["bernoulli_bandit"]["mea"] = mea_player_bernoulli.play()
+
 if __name__ == "__main__" :
     data = {"bernoulli_bandit":{},"gauss_bandit":{}}
-    # data["bernoulli_bandit"]["epsilon"] = epsilon_greedy_player_bernoulli.play()
-    # data["bernoulli_bandit"]["softmax"] = softmax_player_bernoulli.play()
-    # data["bernoulli_bandit"]["ucb"] = ucb_player_bernoulli.play()
-    data["gauss_bandit"]["epsilon"] = epsilon_greedy_player_gauss.play()
-    data["gauss_bandit"]["softmax"] = softmax_player_gauss.play()
-    data["gauss_bandit"]["ucb"] = ucb_player_gauss.play()
-    # plot_armcount(data, "bernoulli_bandit", k)
-    plot_armcount(data, "gauss_bandit", k)
+    data["bernoulli_bandit"]["epsilon"] = epsilon_greedy_player_bernoulli.play()
+    data["bernoulli_bandit"]["softmax"] = softmax_player_bernoulli.play()
+    data["bernoulli_bandit"]["ucb"] = ucb_player_bernoulli.play()
+    play_mea()
+    # data["gauss_bandit"]["epsilon"] = epsilon_greedy_player_gauss.play()
+    # data["gauss_bandit"]["softmax"] = softmax_player_gauss.play()
+    # data["gauss_bandit"]["ucb"] = ucb_player_gauss.play()
+
+    plot_armcount(data, "bernoulli_bandit", k)
+    # plot_armcount(data, "gauss_bandit", k)
     # plot_regret(data, num_iters, "bernoulli_bandit")
