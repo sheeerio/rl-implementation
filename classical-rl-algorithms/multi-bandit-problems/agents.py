@@ -40,6 +40,7 @@ class softmax_agent(BernoulliStationaryBandit):
         self.beta = beta
         self.num_iters = num_iters
         self.Q = np.ones(self.bandit.num_arms)
+        self.indicator = np.zeros(self.bandit.num_arms)
 
     def Policy(self):
         prob = np.copy(np.exp(self.Q/self.beta)/np.sum(np.exp(self.Q/self.beta)))
@@ -48,7 +49,6 @@ class softmax_agent(BernoulliStationaryBandit):
     
     def play(self):
         self.bandit.reset()
-        self.indicator = np.zeros(self.bandit.num_arms)
         for t in range(self.num_iters):
             arm = self.Policy()
             reward = self.bandit.pull(arm)
@@ -59,4 +59,31 @@ class softmax_agent(BernoulliStationaryBandit):
         total_reward = self.bandit.get_total_reward()
         return self.Q, arm_history, regret, total_reward
 
+class UCB_agent(BernoulliStationaryBandit):
+    def __init__(self, bandit, num_iters):
+        self.bandit = bandit
+        self.num_iters = num_iters
+        self.time = 0
+        self.Q = np.zeros(self.bandit.num_arms)
+        self.confidence = np.zeros(self.bandit.num_arms)
     
+    def Policy(self):
+        arm = np.argmax(np.add(self.Q, self.confidence))
+        return arm
+
+    def play(self):
+        self.bandit.reset()
+        for i in range(self.bandit.num_arms):
+            self.Q[i] = self.bandit.pull(i)
+            self.time += 1
+        for t in range(self.num_iters - self.bandit.num_arms):
+            ah = self.bandit.get_history()
+            self.confidence = np.sqrt(2*np.log(self.time+t+1)/ah)
+            arm = self.Policy()
+            reward = self.bandit.pull(arm)
+            self.Q[arm] += (reward - self.Q[arm])/(ah[arm]+1)
+        arm_history = self.bandit.get_history()
+        regret = self.bandit.get_regret()
+        total_reward = self.bandit.get_total_reward()
+        return self.Q, arm_history, regret, total_reward
+

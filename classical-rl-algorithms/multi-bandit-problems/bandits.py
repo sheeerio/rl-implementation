@@ -15,7 +15,7 @@ class GaussianStationaryBandit(object):
     def pull(self, arm):
         self.history[arm] += 1
         self.regret.append(self.opt_q - self.qstar[arm])
-        reward = random.guass(self.qstar[arm], self.sigma[arm])
+        reward = random.gauss(self.qstar[arm], self.sigma[arm])
         self.reward += reward
         return reward
     
