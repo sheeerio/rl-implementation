@@ -114,3 +114,30 @@ class Median_Elimination_Agent(BernoulliStationaryBandit):
         regret = self.bandit.get_regret()
         total_reward = self.bandit.get_total_reward()
         return self.S, arm_history, regret, total_reward
+
+class Thompson_Sampling_Agent(BernoulliStationaryBandit):
+    def __init__(self, bandit, alpha, beta, num_iters):
+        self.bandit = bandit
+        self.alpha = alpha
+        self.beta = beta
+        self.num_iters = num_iters
+        self.indicator = np.zeros(self.bandit.num_arms)
+        self.Q = np.zeros(self.bandit.num_arms)
+    
+    def Policy(self):
+        samples = np.random.normal(loc = self.Q, scale = self.alpha/(np.sqrt(self.indicator)+self.beta))
+        arm = np.argmax(samples)
+        return arm
+    
+    def play(self):
+        self.bandit.reset()
+        for t in range(self.num_iters):
+            arm = self.Policy()
+            reward = self.bandit.pull(arm)
+            self.indicator[arm]+=1
+            self.Q[arm] += (reward-self.Q[arm])/(self.indicator[arm]+1)
+        arm_history = self.bandit.get_history()
+        regret = self.bandit.get_regret()
+        total_reward = self.bandit.get_total_reward()
+        return self.Q, arm_history, regret, total_reward
+

@@ -9,10 +9,12 @@ def plot_armcount(data, bandit, k):
     (_, eps_history, _, _) = data[bandit]["epsilon"]
     (_, sft_history, _, _) = data[bandit]["softmax"]
     (_, ucb_history, _, _) = data[bandit]["ucb"]
+    (_, ts_history, _, _) = data[bandit]["thompson"]
     (fig, ax) = plt.subplots(1,1)
     bar1 = ax.bar(location, eps_history, label="epsilon-greedy", fill=False, edgecolor='green')
     bar2 = ax.bar(location, sft_history, label="softmax", fill=False, edgecolor='red')
     bar3 = ax.bar(location, ucb_history, label="ucb1", fill=False, edgecolor='blue')
+    bar3 = ax.bar(location, ts_history, label="thompson", fill=False, edgecolor='orange')
     ax.set_ylabel('Arm Pull History')
     ax.set_title('Number of times arm pulled')
     ax.set_xticks(location)
