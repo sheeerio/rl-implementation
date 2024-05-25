@@ -27,23 +27,23 @@ class Blob():
         '''
         if diagonal:
 
-            if choice == 0:
+            if choice == 0: # down right
                 self.move(x=1, y=1)
-            elif choice == 1:
+            elif choice == 1: # up left
                 self.move(x=-1, y=-1)
-            elif choice == 2:
+            elif choice == 2: # down left
                 self.move(x=-1, y=1)
-            elif choice == 3:
+            elif choice == 3: # up right
                 self.move(x=1, y=-1)
 
         else:
-            if choice == 0:
+            if choice == 0: #down
                 self.move(x=0, y=1)
-            elif choice == 1:
+            elif choice == 1: #up
                 self.move(x=0, y=-1)
-            elif choice == 2:
+            elif choice == 2: #left
                 self.move(x=-1, y=0)
-            elif choice == 3:
+            elif choice == 3: #right
                 self.move(x=1, y=0)
 
 
@@ -96,7 +96,6 @@ class ENVIRONMENT():
         self.player.x, self.player.y = self.px, self.py
         for iter in range(self.num_enemy):
             self.enemy[iter].x, self.enemy[iter].y = self.ex[iter], self.ey[iter]
-        for iter in range(self.num_food):
             self.food[iter].x, self.food[iter].y = self.fx[iter], self.fy[iter]
         if newpos == True:
             self.player = Blob(self.size)
