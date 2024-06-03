@@ -71,8 +71,6 @@ class Blob():
 
 class ENVIRONMENT():
 
-
-
     def __init__(self, num_player=1, num_enemy=1, num_food=1, size = 10, diagonal = False):
         self.size = size
         self.naction = 4
@@ -96,6 +94,7 @@ class ENVIRONMENT():
         self.player.x, self.player.y = self.px, self.py
         for iter in range(self.num_enemy):
             self.enemy[iter].x, self.enemy[iter].y = self.ex[iter], self.ey[iter]
+        for iter in range(self.num_food):
             self.food[iter].x, self.food[iter].y = self.fx[iter], self.fy[iter]
         if newpos == True:
             self.player = Blob(self.size)
