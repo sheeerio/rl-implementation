@@ -91,7 +91,7 @@ class ENVIRONMENT():
         self.fx,self.fy = [self.food[iter].x for iter in range(self.num_food)], [self.food[iter].y for iter in range(self.num_food)]
 
 
-    def startover(self, newpos=False):
+    def reset(self, newpos=False):
 
         self.player.x, self.player.y = self.px, self.py
         for iter in range(self.num_enemy):
