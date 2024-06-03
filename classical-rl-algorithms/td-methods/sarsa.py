@@ -18,3 +18,17 @@ def random_policy(Q, s, epsilon):
     else:
         a = np.argmax(Q[s])
     return a
+
+Q = np.zeros([nS, nA])
+for e in range(episodes):
+    pos_i,rew,n_term = env.reset(newpos=True)
+    s_i = pos_i[0]*10 + pos_i[1]
+    a_i = random_policy(Q, s_i, epsilon)
+    while n_term == False:
+        pos_f,(rf,term) = env.step(a_i)
+        s_f = pos_f[0]*10 + pos_f[1]
+        a_f = random_policy(Q, s_f, epsilon)
+        Q[s_i,a_i] = (1-learning_rate)*Q[s_i,a_i] + learning_rate*(rf + gamma*Q[s_f,a_f])
+        a_i = a_f
+        s_i = s_f 
+    epsilon *= 1-e-4
