@@ -62,3 +62,7 @@ for epoch in range(epochs):
 
     print("\tEpoch ", epoch + 1, "complete", "\tAverage Loss: ", overall_loss / (batch_idx*batch_size))
 print("Finish")
+
+
+torch.save(model.state_dict(), 'vae_model.pth')
+print("Model saved successfully.")
