@@ -6,33 +6,41 @@ import numpy as np
 import gymnasium as gym
 from gymnasium.spaces import Discrete, Box
 
+
 # make the nn
 def mlp(sizes, act=nn.Tanh, out_act=nn.Identity):
     layers = []
-    for j in range(len(sizes)-1):
-        act = act if j < len(sizes)-2 else out_act
-        layers += [nn.Linear(sizes[j], sizes[j+1]), act()]
+    for j in range(len(sizes) - 1):
+        act = act if j < len(sizes) - 2 else out_act
+        layers += [nn.Linear(sizes[j], sizes[j + 1]), act()]
     return nn.Sequential(*layers)
 
 
-def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2, epochs=50, batch_size=5000, render=False):
+def train(
+    env_name="CartPole-v0",
+    hidden_sizes=[32],
+    lr=1e-2,
+    epochs=50,
+    batch_size=5000,
+    render=False,
+):
     env = gym.make(env_name)
     obs_dim = env.observation_space.shape[0]
     n_acts = env.action_space.n
-    
-    logits_net = mlp(sizes=[obs_dim]+hidden_sizes+[n_acts])
+
+    logits_net = mlp(sizes=[obs_dim] + hidden_sizes + [n_acts])
 
     def get_policy(obs):
         logits = logits_net(obs)
         return Categorical(logits=logits)
-    
+
     def get_action(obs):
         return get_policy(obs).sample().item()
 
     def compute_loss(obs, act, weights):
         logp = get_policy(obs).log_prob(act)
         return -(logp * weights).mean()
-    
+
     optimizer = Adam(logits_net.parameters(), lr=lr)
 
     def train_one_epoch():
@@ -65,4 +73,3 @@ def train(env_name='CartPole-v0', hidden_sizes=[32], lr=1e-2, epochs=50, batch_s
                 batch_lens.append(ep_len)
 
                 batch_weights += [ep_ret] * ep_len
-                

@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from vae import Encoder, Decoder, Model
 
-dataset_path = './datasets/'
+dataset_path = "./datasets/"
 batch_size = 100
 x_dim = 784
 hidden_dim = 400
@@ -22,10 +22,12 @@ encoder = Encoder(input_dim=x_dim, hidden_dim=hidden_dim, latent_dim=latent_dim)
 decoder = Decoder(latent_dim=latent_dim, hidden_dim=hidden_dim, output_dim=x_dim)
 model = Model(Encoder=encoder, Decoder=decoder)
 
-test_dataset = MNIST(dataset_path, transform = mnist_transform, train=False, download=False)
+test_dataset = MNIST(
+    dataset_path, transform=mnist_transform, train=False, download=False
+)
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-model.load_state_dict(torch.load('vae_model.pth'))
+model.load_state_dict(torch.load("vae_model.pth"))
 model.eval()
 
 with torch.no_grad():
@@ -35,11 +37,13 @@ with torch.no_grad():
 
         break
 
+
 def show_image(x, idx):
     x = x.view(batch_size, 28, 28)
     fig = plt.figure()
 
     plt.imshow(x[idx].cpu().numpy())
-    plt.savefig('output1.png')
+    plt.savefig("output1.png")
+
 
 show_image(x, idx=1)

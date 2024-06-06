@@ -1,4 +1,4 @@
-#Custom Environment
+# Custom Environment
 import numpy as np
 from PIL import Image
 import cv2
@@ -9,8 +9,8 @@ import numpy as np
 style.use("ggplot")
 
 
-class Blob():
-    def __init__(self, SIZE = 10):
+class Blob:
+    def __init__(self, SIZE=10):
         self.size = SIZE
         self.x = np.random.randint(0, SIZE)
         self.y = np.random.randint(0, SIZE)
@@ -19,33 +19,32 @@ class Blob():
         return f"{self.x}, {self.y}"
 
     def __sub__(self, other):
-        return (self.x-other.x, self.y-other.y)
+        return (self.x - other.x, self.y - other.y)
 
-    def act(self, choice, diagonal = False):
-        '''
+    def act(self, choice, diagonal=False):
+        """
         Gives us 4 total movement options. (0,1,2,3)
-        '''
+        """
         if diagonal:
 
-            if choice == 0: # down right
+            if choice == 0:  # down right
                 self.move(x=1, y=1)
-            elif choice == 1: # up left
+            elif choice == 1:  # up left
                 self.move(x=-1, y=-1)
-            elif choice == 2: # down left
+            elif choice == 2:  # down left
                 self.move(x=-1, y=1)
-            elif choice == 3: # up right
+            elif choice == 3:  # up right
                 self.move(x=1, y=-1)
 
         else:
-            if choice == 0: #down
+            if choice == 0:  # down
                 self.move(x=0, y=1)
-            elif choice == 1: #up
+            elif choice == 1:  # up
                 self.move(x=0, y=-1)
-            elif choice == 2: #left
+            elif choice == 2:  # left
                 self.move(x=-1, y=0)
-            elif choice == 3: #right
+            elif choice == 3:  # right
                 self.move(x=1, y=0)
-
 
     def move(self, x=-100, y=-100):
 
@@ -61,17 +60,17 @@ class Blob():
 
         if self.x < 0:
             self.x = 0
-        elif self.x > self.size-1:
-            self.x = self.size-1
+        elif self.x > self.size - 1:
+            self.x = self.size - 1
         if self.y < 0:
             self.y = 0
-        elif self.y > self.size-1:
-            self.y = self.size-1
+        elif self.y > self.size - 1:
+            self.y = self.size - 1
 
 
-class ENVIRONMENT():
+class ENVIRONMENT:
 
-    def __init__(self, num_player=1, num_enemy=1, num_food=1, size = 10, diagonal = False):
+    def __init__(self, num_player=1, num_enemy=1, num_food=1, size=10, diagonal=False):
         self.size = size
         self.naction = 4
         self.diagonal = diagonal
@@ -81,13 +80,14 @@ class ENVIRONMENT():
         self.enemy = [Blob() for _ in range(self.num_enemy)]
         self.food = [Blob() for _ in range(self.num_food)]
         self.reward = 0
-        self.colors = {1: (255, 0, 0),
-         2: (0, 255, 0),
-         3: (0, 0, 255)}
-        self.px,self.py = self.player.x,self.player.y
-        self.ex,self.ey = [self.enemy[iter].x for iter in range(self.num_enemy)], [self.enemy[iter].y for iter in range(self.num_enemy)]
-        self.fx,self.fy = [self.food[iter].x for iter in range(self.num_food)], [self.food[iter].y for iter in range(self.num_food)]
-
+        self.colors = {1: (255, 0, 0), 2: (0, 255, 0), 3: (0, 0, 255)}
+        self.px, self.py = self.player.x, self.player.y
+        self.ex, self.ey = [self.enemy[iter].x for iter in range(self.num_enemy)], [
+            self.enemy[iter].y for iter in range(self.num_enemy)
+        ]
+        self.fx, self.fy = [self.food[iter].x for iter in range(self.num_food)], [
+            self.food[iter].y for iter in range(self.num_food)
+        ]
 
     def reset(self, newpos=False):
 
@@ -110,17 +110,20 @@ class ENVIRONMENT():
 
     def calculate_reward(self):
 
-        if self.player.x in [self.enemy[iter].x for iter in range(self.num_enemy)] and self.player.y in [self.enemy[iter].y for iter in range(self.num_enemy)]:
+        if self.player.x in [
+            self.enemy[iter].x for iter in range(self.num_enemy)
+        ] and self.player.y in [self.enemy[iter].y for iter in range(self.num_enemy)]:
             return -100, True
 
-        if self.player.x in [self.food[iter].x for iter in range(self.num_food)] and self.player.y in [self.food[iter].y for iter in range(self.num_food)]:
+        if self.player.x in [
+            self.food[iter].x for iter in range(self.num_food)
+        ] and self.player.y in [self.food[iter].y for iter in range(self.num_food)]:
             return 100, True
 
         else:
             return -1, False
 
-
-    def render(self,renderTime=100):
+    def render(self, renderTime=100):
 
         env = np.zeros((self.size, self.size, 3), dtype=np.uint8)
         for iter in range(self.num_food):
@@ -128,7 +131,7 @@ class ENVIRONMENT():
         for iter in range(self.num_enemy):
             env[self.enemy[iter].x][self.enemy[iter].y] = self.colors[3]
         env[self.player.x][self.player.y] = self.colors[1]
-        img = Image.fromarray(env, 'RGB')
+        img = Image.fromarray(env, "RGB")
         img = img.resize((300, 300))
         cv2.imshow("image", np.array(img))
         cv2.waitKey(renderTime)

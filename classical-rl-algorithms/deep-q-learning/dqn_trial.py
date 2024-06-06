@@ -17,12 +17,12 @@
 #         self.l1 = nn.Linear(n_obs, 128)
 #         self.l2 = nn.Linear(128, 128)
 #         self.l3 = nn.Linear(128, n_actions)
-    
+
 #     def forward(self, x):
 #         x = F.relu(self.l1(x))
 #         x = F.relu(self.l2(x))
 #         return self.l3(x)
-    
+
 # policy_net = DQN(n_obs, n_actions)
 # target_net = DQN(n_obs, n_actions)
 # target_net.load_state_dict(policy_net.state_dict())
@@ -64,7 +64,7 @@
 #         self.opt = optim.Adam(params=self.qnet.parameters(), lr=lr)
 #         self.register_buffer('epsilon', torch.ones(1)*epsilon)
 #         self.criteria = nn.SmoothL1Loss()
-    
+
 #     def get_action(self, state):
 #         qs = self.qnet(state)
 #         prob = np.random.uniform(0.0,1.0,1)
@@ -73,13 +73,13 @@
 #         else: # greedy
 #             action = qs.argmax(dim=-1)
 #         return int(action)
-    
+
 #     def update(self, s, a, r, s_, d):
 #         with torch.no_grad():
 #             q_max, _ = self.qnet_target(s_).max(dim=-1, keepdims=True)
 #             q_target = r + self.gamma * q_max * (1 - d)
 #             q_target = q_target.detach()
-        
+
 #         q_pred = self.qnet(s)[0,a]
 #         loss = self.criteria(q_pred, q_target)
 #         self.opt.zero_grad()
@@ -115,7 +115,7 @@
 #         s = torch.tensor(s, dtype=torch.float32)
 #         a = agent.get_action(s)
 #         s_,r,d,info = env.step(a)
-#         experience = (s, 
+#         experience = (s,
 #                       torch.tensor(a,dtype=torch.float32),
 #                       torch.tensor(r / 100.0, dtype=torch.float32),
 #                       torch.tensor(s_, dtype=torch.float32),
@@ -135,9 +135,8 @@
 
 #     if e % TARGET_UPDATE_INTERVAL == 0:
 #         qnet_target.load_state_dict(qnet.state_dict())
-    
+
 #     if e % 100 == 0:
 #         print("Episode : {:4.0f} | Cumulative Reward : {:4.0f} | EPsilon : {:.3f}".format(e,cum_rew,eps))
 # print('Done')
 # env.close()
-

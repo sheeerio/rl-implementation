@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 class Encoder(nn.Module):
     def __init__(self, input_dim, hidden_dim, latent_dim):
         super(Encoder, self).__init__()
@@ -21,6 +22,7 @@ class Encoder(nn.Module):
 
         return mean, log_var
 
+
 class Decoder(nn.Module):
     def __init__(self, latent_dim, hidden_dim, output_dim):
         super(Decoder, self).__init__()
@@ -34,20 +36,21 @@ class Decoder(nn.Module):
     def forward(self, x):
         x = self.leakyrelu(self.hidden(x))
         x = self.leakyrelu(self.hidden2(x))
-        x_hat  = torch.sigmoid(self.output(x))
+        x_hat = torch.sigmoid(self.output(x))
         return x_hat
+
 
 class Model(nn.Module):
     def __init__(self, Encoder, Decoder):
         super(Model, self).__init__()
         self.Encoder = Encoder
         self.Decoder = Decoder
-    
+
     def reparameterization(self, mean, var):
         epsilon = torch.randn_like(var)
         z = mean + epsilon * var
         return z
-    
+
     def forward(self, x):
         mean, log_var = self.Encoder(x)
         z = self.reparameterization(mean, torch.exp(0.5 * log_var))
