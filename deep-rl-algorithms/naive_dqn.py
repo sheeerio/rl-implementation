@@ -6,6 +6,7 @@ import torch.optim as optim
 import numpy as np
 from utils import plot_learning_curve
 
+
 class LinearDeepQNetwork(nn.Module):
     def __init__(self, lr, n_actions, input_dims):
         super(LinearDeepQNetwork, self).__init__()
@@ -14,7 +15,7 @@ class LinearDeepQNetwork(nn.Module):
 
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()
-        self.device = T.device('mps')
+        self.device = T.device("mps")
         self.to(self.device)
 
     def forward(self, state):
@@ -23,9 +24,18 @@ class LinearDeepQNetwork(nn.Module):
 
         return actions
 
+
 class Agent(object):
-    def __init__(self, input_dims, n_actions, lr, gamma=0.99,
-                 epsilon=1.0, eps_dec=1e-5, eps_min=0.01):
+    def __init__(
+        self,
+        input_dims,
+        n_actions,
+        lr,
+        gamma=0.99,
+        epsilon=1.0,
+        eps_dec=1e-5,
+        eps_min=0.01,
+    ):
         self.lr = lr
         self.input_dims = input_dims
         self.n_actions = n_actions
@@ -46,11 +56,12 @@ class Agent(object):
             action = np.random.choice(self.action_space)
 
         return action
-    
+
     def decrement_epsilon(self):
-        self.epsilon = self.epsilon - self.eps_dec \
-            if self.epsilon > self.eps_min else self.eps_min
-    
+        self.epsilon = (
+            self.epsilon - self.eps_dec if self.epsilon > self.eps_min else self.eps_min
+        )
+
     def learn(self, state, action, reward, state_):
         self.Q.optimizer.zero_grad()
         states = T.tensor(state, dtype=T.float).to(self.Q.device)
@@ -60,22 +71,24 @@ class Agent(object):
 
         q_pred = self.Q.forward(states)[actions]
         q_next = self.Q.forward(states_).max()
-        q_target = rewards + self.gamma*q_next
+        q_target = rewards + self.gamma * q_next
 
         loss = self.Q.loss(q_target, q_pred).to(self.Q.device)
         loss.backward()
         self.Q.optimizer.step()
         self.decrement_epsilon()
 
-if __name__ == '__main__':
-    env = gym.make('CartPole-v1')
+
+if __name__ == "__main__":
+    env = gym.make("CartPole-v1")
     n_games = 10000
     scores = []
     eps_history = []
 
-    agent = Agent(input_dims=env.observation_space.shape,
-                    n_actions = env.action_space.n, lr=1e-4)
-    
+    agent = Agent(
+        input_dims=env.observation_space.shape, n_actions=env.action_space.n, lr=1e-4
+    )
+
     for i in range(n_games):
         score = 0
         done = False
@@ -92,9 +105,13 @@ if __name__ == '__main__':
 
         if i % 100 == 0:
             avg_score = np.mean(scores[-100:])
-            print('epsisode ', i, 'score %.1f avg score %.1f epsilon %.2f' %
-                        (score, avg_score, agent.epsilon))
-    
-    filename = 'cartpole_naive_dqn.png'
-    x = [i+1 for i in range(n_games)]
+            print(
+                "epsisode ",
+                i,
+                "score %.1f avg score %.1f epsilon %.2f"
+                % (score, avg_score, agent.epsilon),
+            )
+
+    filename = "cartpole_naive_dqn.png"
+    x = [i + 1 for i in range(n_games)]
     plot_learning_curve(x, scores, eps_history, filename)
