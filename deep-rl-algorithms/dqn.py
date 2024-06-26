@@ -32,7 +32,7 @@ class DeepQNetwork(nn.Module):
 
 
 class ReplayBuffer(object):
-    def __init__(self, input_dims, n_actions, max_mem_size=100000):
+    def __init__(self, input_dims, max_mem_size=100000):
         self.mem_size = max_mem_size
         self.mem_cntr = 0
         self.state_memory = np.zeros((self.mem_size, *input_dims), dtype=np.float32)
