@@ -3,3 +3,8 @@ deep-rl-algorithms/vae/vq-vae/wandb
 deep-rl-algorithms/tmp/ddpg
 deep-rl-algorithms/vae/vq-vae/__pycache__
 deep-rl-algorithms/vae/vae_model.pth
+deep-rl-algorithms/dqn/frozen.py
+deep-rl-algorithms/dqn/qlearn.py
+deep-rl-algorithms/dqn/dqn-atari/models
+deep-rl-algorithms/dqn/dqn-atari/__pycache__
+deep-rl-algorithms/dqn/dqn-atari/plots
