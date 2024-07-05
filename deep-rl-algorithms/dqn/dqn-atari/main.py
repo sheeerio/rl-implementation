@@ -5,11 +5,11 @@ from utils import plot_learning_curve, make_env
 if __name__ == "__main__":
     env = make_env("PongNoFrameskip-v4")
     best_score = -np.inf
-    load_checkpoint = False
-    n_games = 500
+    load_checkpoint = True
+    n_games = 20
     agent = DQNAgent(
         gamma=0.99,
-        epsilon=1.0,
+        epsilon=0.1,
         lr=1e-4,
         input_dims=(env.observation_space.shape),
         n_actions=env.action_space.n,

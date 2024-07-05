@@ -103,7 +103,7 @@ class DQNAgent:
         states, actions, rewards, dones, states_ = self.sample_transition()
 
         indices = np.arange(self.batch_size)
-        q_pred = self.q_eval(states)[indices, actions]
+        q_pred = self.q_val(states)[indices, actions]
         q_next = self.q_next(states_).max(dim=1)[0]
 
         q_next[dones] = 0.0

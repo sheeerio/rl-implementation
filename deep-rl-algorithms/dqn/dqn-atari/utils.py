@@ -31,6 +31,11 @@ def plot_learning_curve(x, scores, epsilons, filename):
     plt.savefig(filename)
 
 
+# repeat is number of times we want to repeat the action
+# clip_rewards is if we want to clip rewards (only useful if training on multiple games)
+# no_ops number of iterations we do random stuff
+# fire first is used 
+# so we initialize the params, and a buffer of 2 observations
 class RepeatActionAndMaxFrame(gym.Wrapper):
     def __init__(
         self, env=None, repeat=4, clip_rewards=False, no_ops=0, fire_first=False
@@ -87,7 +92,7 @@ class PreprocessFrame(gym.ObservationWrapper):
         )
 
     def observation(self, obs):
-        new_frame = cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY)
+        new_frame = cv2.cvtColor(obs.astype(np.float32), cv2.COLOR_RGB2GRAY)
         resized_screen = cv2.resize(
             new_frame, self.shape[1:], interpolation=cv2.INTER_AREA
         )
