@@ -136,8 +136,9 @@ def make_env(
     clip_rewards=False,
     no_ops=0,
     fire_first=False,
+    render_mode=None
 ):
-    env = gym.make(env_name)
+    env = gym.make(env_name, render_mode=render_mode)
     env = RepeatActionAndMaxFrame(env, repeat, clip_rewards, no_ops, fire_first)
     env = PreprocessFrame(env, *new_shape)
     env = StackFrames(env, repeat)

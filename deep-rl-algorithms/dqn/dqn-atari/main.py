@@ -3,7 +3,7 @@ from agent import DQNAgent
 from utils import plot_learning_curve, make_env
 
 if __name__ == "__main__":
-    env = make_env("PongNoFrameskip-v4")
+    env = make_env("PongNoFrameskip-v4", render_mode="human")
     best_score = -np.inf
     load_checkpoint = True
     n_games = 20
