@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     if load_checkpoint:
         agent.load_models()
-    
+
     fname = f"{agent.algo}_{agent.env_name}_lr{agent.lr}_{n_games}_games"
     figure_file = "plots/" + fname + ".png"
 
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         done = False
         score = 0
         obs, _ = env.reset()
-        
+
         while not done:
             action = agent.choose_action(obs)
             obs_, reward, done, *_ = env.step(action)
@@ -70,4 +70,3 @@ if __name__ == "__main__":
         eps_history.append(agent.epsilon)
 
     plot_learning_curve(steps_array, scores, eps_history, figure_file)
-            

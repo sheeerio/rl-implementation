@@ -34,7 +34,7 @@ def plot_learning_curve(x, scores, epsilons, filename):
 # repeat is number of times we want to repeat the action
 # clip_rewards is if we want to clip rewards (only useful if training on multiple games)
 # no_ops number of iterations we do random stuff
-# fire first is used 
+# fire first is used
 # so we initialize the params, and a buffer of 2 observations
 class RepeatActionAndMaxFrame(gym.Wrapper):
     def __init__(
@@ -136,7 +136,7 @@ def make_env(
     clip_rewards=False,
     no_ops=0,
     fire_first=False,
-    render_mode=None
+    render_mode=None,
 ):
     env = gym.make(env_name, render_mode=render_mode)
     env = RepeatActionAndMaxFrame(env, repeat, clip_rewards, no_ops, fire_first)

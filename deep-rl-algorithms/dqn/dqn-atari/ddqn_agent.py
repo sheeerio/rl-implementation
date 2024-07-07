@@ -103,7 +103,7 @@ class DDQNAgent:
         states, actions, rewards, dones, states_ = self.sample_transition()
 
         indices = np.arange(self.batch_size)
-        
+
         q_val = self.q_val.forward(states)[indices, actions]
         q_next = self.q_next.forward(states_)
         q_pred = self.q_val.forward(states_)

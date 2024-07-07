@@ -9,7 +9,7 @@ if __name__ == "__main__":
     n_games = 20
     agent = DQNAgent(
         gamma=0.99,
-        epsilon=0.1, # change to 1.0 if !load_checkpoint
+        epsilon=0.1,  # change to 1.0 if !load_checkpoint
         lr=1e-4,
         input_dims=(env.observation_space.shape),
         n_actions=env.action_space.n,
