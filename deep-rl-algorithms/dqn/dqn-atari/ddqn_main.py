@@ -1,31 +1,31 @@
 import numpy as np
-from agent import DQNAgent
+from ddqn_agent import DDQNAgent
 from utils import plot_learning_curve, make_env
 
 if __name__ == "__main__":
-    env = make_env("PongNoFrameskip-v4", render_mode="human")
+    env = make_env("PongNoFrameskip-v4")
     best_score = -np.inf
-    load_checkpoint = True
-    n_games = 20
-    agent = DQNAgent(
+    load_checkpoint = False
+    n_games = 300
+    agent = DDQNAgent(
         gamma=0.99,
-        epsilon=0.1,
+        epsilon=1.0,
         lr=1e-4,
-        input_dims=(env.observation_space.shape),
         n_actions=env.action_space.n,
-        memory_size=15000,
+        input_dims=(env.observation_space.shape),
+        memory_size=18000,
         eps_min=0.1,
         batch_size=32,
         replace=1000,
         eps_dec=1e-5,
         chkpt_dir="models/",
-        algo="DQNAgent",
+        algo="DDQN",
         env_name="PongNoFrameskip-v4",
     )
 
     if load_checkpoint:
         agent.load_models()
-
+    
     fname = f"{agent.algo}_{agent.env_name}_lr{agent.lr}_{n_games}_games"
     figure_file = "plots/" + fname + ".png"
 
@@ -36,14 +36,14 @@ if __name__ == "__main__":
         done = False
         score = 0
         obs, _ = env.reset()
-
+        
         while not done:
             action = agent.choose_action(obs)
             obs_, reward, done, *_ = env.step(action)
             score += reward
 
             if not load_checkpoint:
-                agent.store_transition(obs, action, reward, int(done), obs_)
+                agent.store_transition(obs, action, reward, done, obs_)
                 agent.learn()
             obs = obs_
             n_steps += 1
@@ -70,3 +70,4 @@ if __name__ == "__main__":
         eps_history.append(agent.epsilon)
 
     plot_learning_curve(steps_array, scores, eps_history, figure_file)
+            
