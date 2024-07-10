@@ -1,5 +1,4 @@
-import argparse, os
-import gymnasium as gym
+import argparse
 from gymnasium import wrappers
 import numpy as np
 import agents as Agents
@@ -130,7 +129,7 @@ if __name__ == "__main__":
     fname = f"{args.algo}_{args.env}_lr{args.lr}_{args.n_games}games"
     figure_file = "plots/" + fname + ".png"
 
-    scores_file = fname + "_scores.npy"
+    scores_file = 'scores/' + fname + "_scores.npy"
 
     scores, eps_history = [], []
     n_steps = 0
