@@ -52,6 +52,7 @@ class DQN(nn.Module):
         print("... loading checkpoint ...")
         self.load_state_dict(T.load(self.checkpoint_file))
 
+
 class DuelingDQN(nn.Module):
     def __init__(self, input_dim, name, n_actions, lr, chkpt_dir):
         super().__init__()

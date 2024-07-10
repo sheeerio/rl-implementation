@@ -106,9 +106,13 @@ class DuelingDQNAgent:
 
         value, advantage = self.q_val.forward(states)
         q_next_val, q_next_adv = self.q_next.forward(states_)
-        
-        q_val = T.add(value, (advantage - advantage.mean(dim=1, keepdims=True)))[indices, actions]
-        q_next = T.add(q_next_val, (q_next_adv - q_next_adv.mean(dim=1, keepdims=True))).max(dim=1)[0]
+
+        q_val = T.add(value, (advantage - advantage.mean(dim=1, keepdims=True)))[
+            indices, actions
+        ]
+        q_next = T.add(
+            q_next_val, (q_next_adv - q_next_adv.mean(dim=1, keepdims=True))
+        ).max(dim=1)[0]
         q_next[dones] = 0.0
 
         q_target = rewards + self.gamma * q_next
@@ -118,6 +122,7 @@ class DuelingDQNAgent:
         self.q_val.optimizer.step()
         self.learn_step_counter += 1
         self.decrement_epsilon()
+
 
 class DuelingDoubleDQNAgent:
     def __init__(
@@ -222,8 +227,10 @@ class DuelingDoubleDQNAgent:
         value, advantage = self.q_val.forward(states)
         q_next_val, q_next_adv = self.q_next.forward(states_)
         q_pred_val, q_pred_adv = self.q_val.forward(states_)
-        
-        q_val = T.add(value, (advantage - advantage.mean(dim=1, keepdims=True)))[indices, actions]
+
+        q_val = T.add(value, (advantage - advantage.mean(dim=1, keepdims=True)))[
+            indices, actions
+        ]
         q_next = T.add(q_next_val, (q_next_adv - q_next_adv.mean(dim=1, keepdims=True)))
         q_pred = T.add(q_pred_val, (q_pred_adv - q_pred_adv.mean(dim=1, keepdims=True)))
         max_actions = T.argmax(q_pred, dim=1)
@@ -236,6 +243,7 @@ class DuelingDoubleDQNAgent:
         self.q_val.optimizer.step()
         self.learn_step_counter += 1
         self.decrement_epsilon()
+
 
 class DDQNAgent:
     def __init__(
