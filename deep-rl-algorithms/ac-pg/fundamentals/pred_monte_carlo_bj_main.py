@@ -1,5 +1,5 @@
 import gymnasium as gym
-from monte_carlo_bj import Agent
+from pred_monte_carlo_bj import Agent
 
 if __name__ == "__main__":
     env = gym.make("Blackjack-v1")
