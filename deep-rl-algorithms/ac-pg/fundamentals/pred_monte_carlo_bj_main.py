@@ -1,13 +1,13 @@
 import gymnasium as gym
 from monte_carlo_bj import Agent
 
-if __name__ == '__main__':
-    env = gym.make('Blackjack-v1')
+if __name__ == "__main__":
+    env = gym.make("Blackjack-v1")
     agent = Agent()
     n_eps = 500000
     for i in range(n_eps):
         if i % 50000 == 0:
-            print('starting episode ', i)
+            print("starting episode ", i)
         obs, _ = env.reset()
         done = False
 

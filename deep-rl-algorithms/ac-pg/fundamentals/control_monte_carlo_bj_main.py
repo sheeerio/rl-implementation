@@ -2,11 +2,11 @@ import gymnasium as gym
 import matplotlib.pyplot as plt
 from control_monte_carlo_bj import Agent
 
-if __name__ == '__main__':
-    env = gym.make('Blackjack-v1')
+if __name__ == "__main__":
+    env = gym.make("Blackjack-v1")
     agent = Agent(eps=0.001)
     n_eps = 200000
-    win_lose_draw = {-1:0, 0:0, 1:0}
+    win_lose_draw = {-1: 0, 0: 0, 1: 0}
     win_rates = []
     for i in range(n_eps):
         if i > 0 and i % 1000 == 0:
@@ -14,7 +14,7 @@ if __name__ == '__main__':
             win_rates.append(pct)
         if i % 50000 == 0:
             rates = win_rates[-1] if win_rates else 0.0
-            print('running episode ', i, 'win rate %.3f' % rates)
+            print("running episode ", i, "win rate %.3f" % rates)
         state, _ = env.reset()
         done = False
 

@@ -1,23 +1,24 @@
 import numpy as np
 
-class Agent():
+
+class Agent:
     def __init__(self, eps=0.1, gamma=0.99):
         self.Q = {}
         self.sum_space = [i for i in range(4, 22)]
-        self.dealer_show_card_space = [i+1 for i in range(10)]
+        self.dealer_show_card_space = [i + 1 for i in range(10)]
         self.ace_space = [False, True]
-        self.action_space = [0, 1] # stick or hit
+        self.action_space = [0, 1]  # stick or hit
 
         self.state_space = []
         self.returns = {}
-        self.pairs_visited = {} # first visit or not
+        self.pairs_visited = {}  # first visit or not
         self.memory = []
 
         self.gamma = gamma
         self.eps = eps
         self.init_value()
         self.policy = self.init_policy()
-    
+
     def init_value(self):
         for total in self.sum_space:
             for card in self.dealer_show_card_space:
@@ -28,18 +29,18 @@ class Agent():
                         self.Q[(state, action)] = 0
                         self.returns[(state, action)] = []
                         self.pairs_visited[(state, action)] = 0
-    
+
     def init_policy(self):
         policy = {}
         n = len(self.action_space)
         for state in self.state_space:
-            policy[state] = [1/n for _ in range(n)]
+            policy[state] = [1 / n for _ in range(n)]
         return policy
-    
+
     def choose_action(self, state):
         action = np.random.choice(self.action_space, p=self.policy[state])
         return action
-    
+
     def update_q(self):
         for idt, (state, action, _) in enumerate(self.memory):
             G = 0
@@ -50,14 +51,14 @@ class Agent():
                     G += reward * discount
                     discount *= self.gamma
                     self.returns[(state, action)].append(G)
-        
+
         for state, action, _ in self.memory:
             self.Q[(state, action)] = np.mean(self.returns[(state, action)])
             self.update_policy(state)
-        
+
         for state_action in self.pairs_visited.keys():
             self.pairs_visited[state_action] = 0
-        
+
         self.memory = []
 
     def update_policy(self, state):
@@ -66,7 +67,6 @@ class Agent():
         n = len(self.action_space)
         probs = []
         for action in self.action_space:
-            prob = 1-self.eps+self.eps/n if action == a_max else \
-                self.eps/n
+            prob = 1 - self.eps + self.eps / n if action == a_max else self.eps / n
             probs.append(prob)
         self.policy[state] = probs
