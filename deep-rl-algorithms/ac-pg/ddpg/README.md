@@ -28,7 +28,7 @@ Replay buffer sampling is uniform, and the samples are removed sequentially when
 
 Batch normalization was used as a solution to the variance in features of the state across environments. In low-dimensional case, batch norm was used on all layers prior to the action output.
 
-The exploration problem for deterministic continuous action outputs is solved by adding an additional noise parameter (Ornstein-Uhlenbeck process for exploration effiency in physical control problems) to the actor: $\mu^'(s_t) = \mu(s_t\mid\theta_t^\mu)+\mathcal N$
+The exploration problem for deterministic continuous action outputs is solved by adding an additional noise parameter (Ornstein-Uhlenbeck process for exploration effiency in physical control problems) to the actor: $\mu^{'}(s_t) = \mu(s_t\mid\theta_t^\mu)+\mathcal N$
 
 ## results - what are we shooting for (ballpark)
 
