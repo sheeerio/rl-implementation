@@ -12,11 +12,11 @@ Naive determininistic policy gradients (DPG) is not stable in such domains, for 
 
 ## background - mathematical details; pay close attention
 
-$Q^\mu(s_t,a_t)=\mathbb{E}_{r_t,s_{t+1}\sim E}[r(s_t,a_t)+\gamma Q^\mu(s_{t+1},\mu(s_{t+1}))]$
+$Q^\mu(s_t,a_t)=\E_{r_t,s_{t+1}\sim E}[r(s_t,a_t)+\gamma Q^\mu(s_{t+1},\mu(s_{t+1}))]$
 
 where $\mu(s)$ is the deterministic target policy. The Q-function is denoted with a $\mu$ superscript since $\mu$ is a parameter of the function.
 
-$y_t=r(s_t,a_t)+\gamma Q(s_{t+1},\mu(s_{t+1})\mid\theta^Q)
+$y_t=r(s_t,a_t)+\gamma Q(s_{t+1},\mu(s_{t+1})\mid\theta^Q)$
 
 ## methods - how experiments were performed
 
