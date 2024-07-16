@@ -46,6 +46,7 @@ the networks use relu and batch norm for all hidden layers, the final output lay
 ```
 lr              1e-5 for actor
                 1e-4 for critic
+L2              0.01
 gamma           0.99
 tau             1e-3
 low-dimensional
