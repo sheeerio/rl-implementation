@@ -23,7 +23,6 @@ class PolicyNetwork(nn.Module):
 
 class Agent():
     def __init__(self, lr, input_dims, n_actions=4, gamma=0.99):
-        self.lr = lr
         self.gamma = gamma
         self.network = PolicyNetwork(lr, input_dims, n_actions)
         self.rewards = []
