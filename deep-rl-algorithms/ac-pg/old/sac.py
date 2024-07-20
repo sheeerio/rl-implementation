@@ -8,7 +8,8 @@ import gymnasium as gym
 from utils import plot_learning_curve
 import os
 
-class ReplayBuffer():
+
+class ReplayBuffer:
     def __init__(self, max_size, input_shape):
         self.max_mem = max_size
         self.mem_cntr = 0
@@ -17,7 +18,7 @@ class ReplayBuffer():
         self.action_memory = np.zeros(self.max_mem, dtype=np.int32)
         self.reward_memory = np.zeros(self.max_mem, dtype=np.float32)
         self.terminal_memory = np.zeros(self.max_mem, dtype=np.bool_)
-    
+
     def store_transition(self, state, action, reward, state_, done):
         index = self.mem_cntr % self.max_mem
 
@@ -27,22 +28,46 @@ class ReplayBuffer():
         self.new_state_memory[index] = state_
         self.terminal_memory[index] = done
         self.mem_cntr += 1
-    
+
     def sample_buffer(self, batch_size):
         max_mem = min(self.max_mem, self.mem_cntr)
         batch = np.random.choice(max_mem, batch_size, replace=False)
         batch_indices = np.arange(batch_size, dtype=np.int32)
-        state_batch = T.tensor(self.state_memory[batch], dtype=T.float).to(T.device("mps"))
-        new_state_batch = T.tensor(self.new_state_memory[batch], dtype=T.float).to(T.device("mps"))
-        reward_batch = T.tensor(self.reward_memory[batch], dtype=T.float).to(T.device("mps"))
-        terminal_batch = T.tensor(self.terminal_memory[batch], dtype=T.float).to(T.device("mps"))
+        state_batch = T.tensor(self.state_memory[batch], dtype=T.float).to(
+            T.device("mps")
+        )
+        new_state_batch = T.tensor(self.new_state_memory[batch], dtype=T.float).to(
+            T.device("mps")
+        )
+        reward_batch = T.tensor(self.reward_memory[batch], dtype=T.float).to(
+            T.device("mps")
+        )
+        terminal_batch = T.tensor(self.terminal_memory[batch], dtype=T.float).to(
+            T.device("mps")
+        )
         action_batch = self.action_memory[batch]
 
-        return state_batch, new_state_batch, reward_batch, \
-            terminal_batch, action_batch, batch_indices
+        return (
+            state_batch,
+            new_state_batch,
+            reward_batch,
+            terminal_batch,
+            action_batch,
+            batch_indices,
+        )
+
 
 class CriticNetwork(nn.Module):
-    def __init__(self, beta, input_dims, n_actions, name, fc1_dims=256, fc2_dims=256, chkpt_dir='tmp/sac'):
+    def __init__(
+        self,
+        beta,
+        input_dims,
+        n_actions,
+        name,
+        fc1_dims=256,
+        fc2_dims=256,
+        chkpt_dir="tmp/sac",
+    ):
         super(CriticNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -50,9 +75,9 @@ class CriticNetwork(nn.Module):
         self.n_actions = n_actions
         self.name = name
         self.checkpoint_dir = chkpt_dir
-        self.checkpoint_file = os.path.join(self.checkpoint_dir, name+'_sac')
+        self.checkpoint_file = os.path.join(self.checkpoint_dir, name + "_sac")
 
-        self.fc1 = nn.Linear(self.input_dims[0]+n_actions, self.fc1_dims)
+        self.fc1 = nn.Linear(self.input_dims[0] + n_actions, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.q = nn.Linear(self.fc2_dims, 1)
 
@@ -75,16 +100,24 @@ class CriticNetwork(nn.Module):
     def load_checkpoint(self):
         self.load_state_dict(T.load(self.checkpoint_file))
 
+
 class ValueNetwork(nn.Module):
-    def __init__(self, beta, input_dims, fc1_dims=256, fc2_dims=256, \
-        name='value', chkpt_dir='tmp/sac'):
+    def __init__(
+        self,
+        beta,
+        input_dims,
+        fc1_dims=256,
+        fc2_dims=256,
+        name="value",
+        chkpt_dir="tmp/sac",
+    ):
         super(ValueNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
         self.name = name
         self.checkpoint_dir = chkpt_dir
-        self.checkpoint_file = os.path.join(self.checkpoint_dir, name+'_sac')
+        self.checkpoint_file = os.path.join(self.checkpoint_dir, name + "_sac")
 
         self.fc1 = nn.Linear(*self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
@@ -99,16 +132,26 @@ class ValueNetwork(nn.Module):
         v = self.v(value)
 
         return v
-    
+
     def save_checkpoint(self):
         T.save(self.state_dict(), self.checkpoint_file)
 
     def load_checkpoint(self):
         self.load_state_dict(T.load(self.checkpoint_file))
 
+
 class ActorNetwork(nn.Module):
-    def __init__(self, alpha, max_action, input_dims, fc1_dims=256, fc2_dims=256,\
-                name='actor', n_actions=2, chkpt_dir='tmp/sac'):
+    def __init__(
+        self,
+        alpha,
+        max_action,
+        input_dims,
+        fc1_dims=256,
+        fc2_dims=256,
+        name="actor",
+        n_actions=2,
+        chkpt_dir="tmp/sac",
+    ):
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -116,7 +159,7 @@ class ActorNetwork(nn.Module):
         self.n_actions = n_actions
         self.name = name
         self.checkpoint_dir = chkpt_dir
-        self.checkpoint_file = os.path.join(self.checkpoint_dir, self.name+'_sac')
+        self.checkpoint_file = os.path.join(self.checkpoint_dir, self.name + "_sac")
         self.max_action = max_action
         self.reparam_noise = 1e-6
 
@@ -148,7 +191,7 @@ class ActorNetwork(nn.Module):
             actions = probabilities.rsample()
         else:
             actions = probabilities.sample()
-            
+
         action = T.tanh(actions) * T.tensor(self.max_action).to(T.device("mps"))
         log_probs = probabilities.log_prob(actions)
 
@@ -169,22 +212,44 @@ class ActorNetwork(nn.Module):
     def load_checkpoint(self):
         self.load_state_dict(T.load(self.checkpoint_file))
 
-class Agent():
-    def __init__(self, alpha=3e-4, beta=3e-4, input_dims=8, tau=5e-3,
-                env=None, gamma=0.99, n_actions=2, max_size=1000000,
-                layer1_size=256, layer2_size=256, batch_size=256, reward_scale=2):
+
+class Agent:
+    def __init__(
+        self,
+        alpha=3e-4,
+        beta=3e-4,
+        input_dims=8,
+        tau=5e-3,
+        env=None,
+        gamma=0.99,
+        n_actions=2,
+        max_size=1000000,
+        layer1_size=256,
+        layer2_size=256,
+        batch_size=256,
+        reward_scale=2,
+    ):
         self.gamma = gamma
         self.tau = tau
         self.memory = ReplayBuffer(max_size, input_dims)
         self.batch_size = batch_size
         self.n_actions = n_actions
-        
-        self.actor = ActorNetwork(alpha, input_dims=input_dims, n_actions=n_actions,
-                        name='actor', max_action=env.action_space.high)
-        self.critic_1 = CriticNetwork(beta, input_dims, n_actions=n_actions, name='critic_1')
-        self.critic_2 = CriticNetwork(beta, input_dims, n_actions=n_actions, name='critic_2')
-        self.value = ValueNetwork(beta, input_dims, name='value')
-        self.target_value = ValueNetwork(beta, input_dims, name='target_value')
+
+        self.actor = ActorNetwork(
+            alpha,
+            input_dims=input_dims,
+            n_actions=n_actions,
+            name="actor",
+            max_action=env.action_space.high,
+        )
+        self.critic_1 = CriticNetwork(
+            beta, input_dims, n_actions=n_actions, name="critic_1"
+        )
+        self.critic_2 = CriticNetwork(
+            beta, input_dims, n_actions=n_actions, name="critic_2"
+        )
+        self.value = ValueNetwork(beta, input_dims, name="value")
+        self.target_value = ValueNetwork(beta, input_dims, name="target_value")
 
         self.scale = reward_scale
         self.update_network_parameters(tau=1)
@@ -194,14 +259,14 @@ class Agent():
         actions, _ = self.actor.sample_normal(state, reparameterize=False)
         # print(actions.shape)
         return actions.cpu().detach().numpy()
-    
+
     def remember(self, state, action, reward, new_state, done):
         self.memory.store_transition(state, action, reward, new_state, done)
-    
+
     def update_network_parameters(self, tau=None):
         if tau is None:
             tau = self.tau
-        
+
         target_value_params = self.target_value.named_parameters()
         value_params = self.value.named_parameters()
 
@@ -209,13 +274,15 @@ class Agent():
         value_state_dict = dict(value_params)
 
         for name in value_state_dict:
-            value_state_dict[name] = tau*value_state_dict[name].clone() + \
-                    (1-tau)*target_value_state_dict[name].clone()
-        
+            value_state_dict[name] = (
+                tau * value_state_dict[name].clone()
+                + (1 - tau) * target_value_state_dict[name].clone()
+            )
+
         self.target_value.load_state_dict(value_state_dict)
-    
+
     def save_models(self):
-        print('... saving models ...')
+        print("... saving models ...")
         self.actor.save_checkpoint()
         self.value.save_checkpoint()
         self.target_value.save_checkpoint()
@@ -223,17 +290,19 @@ class Agent():
         self.critic_2.save_checkpoint()
 
     def load_models(self):
-        print('... loading models ...')
+        print("... loading models ...")
         self.actor.load_checkpoint()
         self.value.load_checkpoint()
         self.target_value.load_checkpoint()
         self.critic_1.load_checkpoint()
         self.critic_2.load_checkpoint()
-    
+
     def learn(self):
         if self.memory.mem_cntr < self.batch_size:
             return
-        state, action, reward, new_state, done, batch_index = self.memory.sample_buffer(self.batch_size)
+        state, action, reward, new_state, done, batch_index = self.memory.sample_buffer(
+            self.batch_size
+        )
 
         value = self.value(state).view(-1)
         value_ = self.target_value(new_state).view(-1)
@@ -280,22 +349,26 @@ class Agent():
 
         self.update_network_parameters()
 
-if __name__ == '__main__':
-    env = gym.make('InvertedPendulum-v4')
-    agent = Agent(input_dims=env.observation_space.shape, env=env,
-                n_actions=env.action_space.shape[0])
+
+if __name__ == "__main__":
+    env = gym.make("InvertedPendulum-v4")
+    agent = Agent(
+        input_dims=env.observation_space.shape,
+        env=env,
+        n_actions=env.action_space.shape[0],
+    )
     n_games = 250
-    filename = 'inverted_pendulum.png'
-    
-    figure_file = 'plots/' + filename
+    filename = "inverted_pendulum.png"
+
+    figure_file = "plots/" + filename
     best_score = env.reward_range[0]
     score_history = []
     load_checkpoint = False
 
     if load_checkpoint:
         agent.load_models()
-        env.render(mode='human')
-    
+        env.render(mode="human")
+
     for i in range(n_games):
         obs, _ = env.reset()
         done = False
@@ -310,15 +383,15 @@ if __name__ == '__main__':
                 agent.learn()
             obs = obs_
         score_history.append(score)
-        avg_score = np.mean(score_history[-100:]) 
+        avg_score = np.mean(score_history[-100:])
 
         if avg_score > best_score:
             best_score = avg_score
             if not load_checkpoint:
                 agent.save_models()
 
-        print('episode ', i, 'score %.1f' % score, 'avg_score %.1f' % avg_score)
-    
+        print("episode ", i, "score %.1f" % score, "avg_score %.1f" % avg_score)
+
     if not load_checkpoint:
         x = [i + 1 for i in range(n_games)]
         plot_learning_curve(x, score_history, None, figure_file)

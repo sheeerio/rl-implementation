@@ -7,4 +7,3 @@
 # We have two actor and two critic networks, a target for each.
 # Updates are soft, according to theta_prime = tau*theta + (1-tau)*theta_prime, with tau << 1
 # the target actor is just the evaluation actor plus some noise process -> will need a class for noise
-
