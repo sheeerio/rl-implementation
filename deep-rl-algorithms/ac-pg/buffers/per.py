@@ -96,26 +96,26 @@ class PrioritizedReplayBuffer(object):
             This is never smaller than the maximum priority in the buffer.
         
     """
-    def __init__(self, state_shape, action_shape, max_size, eps=1e-2, alpha=0.1, beta=0.1):
-        self.tree = SumTree(max_size)
+    def __init__(self, obs_shape, action_shape, capacity, eps=1e-2, alpha=0.1, beta=0.1):
+        self.tree = SumTree(capacity)
 
         self.eps = eps
         self.alpha = alpha
         self.beta = beta
         self.max_priority = eps
 
-        obs_dtype = np.float32 if len(state_shape) == 1 else np.uint8
+        obs_dtype = np.float32 if len(obs_shape) == 1 else np.uint8
 
-        self.obses = np.zeros((max_size, *state_shape), dtype=obs_dtype)
-        self.obses_ = np.zeros((max_size, *state_shape), dtype=obs_dtype)
-        self.actions = np.zeros((max_size, *action_shape), dtype=np.float32)
-        self.rewards = np.zeros((max_size, 1), dtype=np.float32)
-        self.not_dones = np.zeros((max_size, 1), dtype=np.float32)
-        self.not_dones_no_max = np.zeros((max_size, 1), dtype=np.float32)
+        self.obses = np.empty((capacity, *obs_shape), dtype=obs_dtype)
+        self.obses_ = np.empty((capacity, *obs_shape), dtype=obs_dtype)
+        self.actions = np.empty((capacity, *action_shape), dtype=np.float32)
+        self.rewards = np.zeros((capacity, 1), dtype=np.float32)
+        self.not_dones = np.zeros((capacity, 1), dtype=np.float32)
+        self.not_dones_no_max = np.zeros((capacity, 1), dtype=np.float32)
 
         self.idx = 0
         self.curr_size = 0
-        self.capacity = max_size
+        self.capacity = capacity
 
     def __len__(self):
         return self.curr_size
