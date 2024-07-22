@@ -5,7 +5,7 @@ import numpy as np
 
 import wandb
 
-from agent import SAC
+from agent.sac import SAC
 from utils import plot_learning_curve
 
 wandb.login()
